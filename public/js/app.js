@@ -1912,25 +1912,107 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      currentTemp: ""
+      apiKey: "4bc257cab658657dc3e0067d35b1e9ee",
+      url: "",
+      lastUpdate: "",
+      currentTemp: "",
+      description: "",
+      icon: "",
+      windSpeed: "",
+      humidity: "",
+      cloudy: ""
     };
   },
   methods: {
     getWeather: function getWeather() {
-      var _this = this;
-
-      var url = "http://api.openweathermap.org/data/2.5/weather?q=Warsaw&?units=metric&APPID=4bc257cab658657dc3e0067d35b1e9ee&lang=pl";
-      axios.get(url).then(function (response) {
-        _this.currentTemp = response.data.main.temp;
+      var expire = {
+        timestamp: new Date().getTime() + 1 * 60 * 60 * 1000
+      };
+      localStorage.setItem("timestamp", JSON.stringify(expire));
+      this.url = "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/weather?q=Warsaw&units=metric&APPID=" + this.apiKey + "&lang=pl";
+      axios.get(this.url).then(function (response) {
+        localStorage.setItem("currentTemp", response.data.main.temp);
+        localStorage.setItem("description", response.data.weather[0].description);
+        localStorage.setItem("icon", response.data.weather[0].icon);
+        localStorage.setItem("windSpeed", response.data.wind.speed + "m/s");
+        localStorage.setItem("humidity", response.data.main.humidity + "%");
+        localStorage.setItem("cloudy", response.data.clouds.all);
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    beforeMount: function beforeMount() {
+    assignWeather: function assignWeather() {
+      this.currentTemp = localStorage.currentTemp;
+      this.description = localStorage.description;
+      this.icon = localStorage.icon;
+      this.windSpeed = localStorage.windSpeed;
+      this.humidity = localStorage.humidity;
+      this.cloudy = localStorage.cloudy;
+    }
+  },
+  beforeMount: function beforeMount() {
+    var object = JSON.parse(localStorage.getItem("timestamp"));
+    var dateString = object.timestamp;
+    var now = new Date().getTime().toString();
+    var minDiff = dateString - now;
+    this.lastUpdate = Math.round(minDiff % 86400000 % 3600000 / 60000);
+    var date = new Date(dateString * 1000);
+    var hours = date.getHours();
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    this.lastUpdate = hours + " : " + minutes.substr(-2) + " : " + seconds.substr(-2);
+
+    if (now > dateString) {
       this.getWeather();
+      this.assignWeather();
+    } else {
+      this.assignWeather();
     }
   }
 });
@@ -19585,9 +19667,105 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v(_vm._s(_vm.currentTemp))])
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "current-weather col-md-12 " }, [
+      _c("div", { staticClass: "row" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass:
+              "col-md-4 d-flex align-items-center d-flex justify-content-center"
+          },
+          [
+            _c("div", { staticClass: "current-icon" }, [
+              _c("img", {
+                attrs: {
+                  src:
+                    "http://openweathermap.org/img/wn/" + _vm.icon + "@4x.png"
+                }
+              })
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass:
+              "col-md-4 p-2 d-flex align-items-center d-flex justify-content-center"
+          },
+          [
+            _c("div", { staticClass: "current-conditions" }, [
+              _c("div", { staticClass: "temp" }, [
+                _c("b", [_vm._v(_vm._s(_vm.currentTemp) + " °C")])
+              ]),
+              _vm._v("\n          " + _vm._s(_vm.description) + "\n        ")
+            ])
+          ]
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-md-12 font-weight-bold current-more-info" }, [
+      _c("div", { staticClass: "row" }, [
+        _c(
+          "div",
+          { staticClass: "col-md-4 p-1 d-flex justify-content-center" },
+          [_vm._v("wilgotność: " + _vm._s(_vm.humidity))]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "col-md-4 p-1 d-flex justify-content-center" },
+          [_vm._v("wiatr: " + _vm._s(_vm.windSpeed))]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "col-md-4 p-1 d-flex justify-content-center" },
+          [_vm._v("zachmurzenie: " + _vm._s(_vm.cloudy))]
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "actions text-center" }, [
+      _c("p", [
+        _vm._v("\n      Ostatnia aktualizacja\n      "),
+        _c("b", [
+          _c("br"),
+          _vm._v(" "),
+          _c("h4", [_vm._v(_vm._s(this.lastUpdate))])
+        ])
+      ])
+    ])
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "col-md-4 p-2 d-flex align-items-center d-flex justify-content-center"
+      },
+      [
+        _c("h1", { staticClass: "text-uppercase text-center" }, [
+          _c("b", [
+            _vm._v("\n            Warszawa\n            "),
+            _c("br"),
+            _vm._v("pogoda"),
+            _c("span", { staticClass: "dot" }, [_vm._v(".")])
+          ])
+        ])
+      ]
+    )
+  }
+]
 render._withStripped = true
 
 
