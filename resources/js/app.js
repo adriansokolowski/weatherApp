@@ -1,6 +1,6 @@
 require('./bootstrap');
 
-import Vue  from 'vue'
+import Vue from 'vue'
 
 Vue.component('weather-index', 
     require('./components/Weather.vue').default)
